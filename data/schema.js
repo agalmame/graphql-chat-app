@@ -8,13 +8,21 @@ const typeDefs = `
 		email: String!
 	}
 	
+	type Todo {
+		userId: ID!
+		title: String!
+	}
+	
 	type Query {
 		me: User 
+		myTodo: [Todo]
 	}
 	
 	type Mutation {
 		signup(username: String!, email: String!, password: String!, confirmeP: String!): String
 		login(email: String!, password: String!): String 
+		addTodo(title: String!): Todo 
+		
 	}
 `
 

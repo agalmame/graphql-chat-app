@@ -1,21 +1,34 @@
-const { User } = require('../models');
+const { User, task} = require('../models');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
 require('dotenv').config()
-
+let i = 0;
 const resolvers = {
 	Query: {
-		async me(_,args , { user }) {
+/*		async me(_,args , { user }) {
 			if(!user) {
 				throw new Error('you are not authenticated');
 			}
-			console.log("dfsf")
 			return await User.findById(user.id)
-		}
+		},*/
+		async myTodo(_,args, { user }) {
+			if(!user) {
+				throw new Error("you are not authorized");
+			}
+
+			const all = await task.findAll({
+				attributes: ["id", "title"],
+				where: {
+					task_id: user.sub
+				}
+			})
+			console.log(i++)
+			return all
+		} 
 	},
 
 	Mutation: {
-		async signup (_, { username, email, password , confirmeP }){
+/*		async signup (_, { username, email, password , confirmeP }){
 			if(password == confirmeP){
 				const user = await User.create({
 					username,
@@ -47,6 +60,17 @@ const resolvers = {
 				process.env.JWT_SECRET,
 				{ expiresIn: '1d' }
 			)
+		},*/
+		async addTodo (_, {title}, {user}) {
+			if(!user){
+				throw new Error("you are not authorized")
+			}
+			const todo = await task.create({
+				task_id: user.sub,
+				title 
+			})
+
+			return todo 
 		}
 
 	}
