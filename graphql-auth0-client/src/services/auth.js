@@ -7,10 +7,10 @@ export default class Auth {
 	authNotifier = new EventEmitter()
 
 	constructor (){
-		this.login = this.login 
-		this.setSession = this.setSession 
-		this.logout = this.logout 
-		this.isAuthenticated = this.isAuthenticated
+		this.login = this.login.bind(this)
+		this.setSession = this.setSession.bind(this) 
+		this.logout = this.logout.bind(this)
+		this.isAuthenticated = this.isAuthenticated.bind(this)
 	}
 
 	auth0 = new auth0.WebAuth({

@@ -1,4 +1,4 @@
-const { User, task} = require('../models');
+const { User, task, friends} = require('../models');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
 require('dotenv').config()
@@ -24,7 +24,11 @@ const resolvers = {
 			})
 			console.log(i++)
 			return all
-		} 
+		},
+		async users(_, args, { user }){
+			console.log('heeeere')
+			return await friends.findAll({attributes:["friend_id","name","email"]})
+		}
 	},
 
 	Mutation: {

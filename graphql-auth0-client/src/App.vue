@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   	<nav class="navbar is-primary">
-		<div class="contain">
+		<div class="container">
 			<div class="navbar-brand">
 				<router-link class="navbar-item" to="/">GraphQL Auth0</router-link>
 			</div>
@@ -9,6 +9,7 @@
 				<div class="navbar-end">
 					<a class="navbar-item" v-if="!authenticated" @click="login()">Log In</a>
 					<a class="navbar-item" v-else @click="logout()">Log Out</a>
+					<router-link class="navbar-item" :to="{path:'/listusers'}">chat</router-link>
 				</div>
 			</div>
 		</div>

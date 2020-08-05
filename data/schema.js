@@ -3,8 +3,8 @@ const resolvers = require('./resolvers');
 
 const typeDefs = `
 	type User {
-		id: Int!
-		username: String!
+		friend_id: Int!
+		name: String!
 		email: String!
 	}
 	
@@ -16,6 +16,7 @@ const typeDefs = `
 	type Query {
 		me: User 
 		myTodo: [Todo]
+		users: [User]
 	}
 	
 	type Mutation {

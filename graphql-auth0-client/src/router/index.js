@@ -4,6 +4,8 @@ import Home from '@/components/Home'
 import Callback from "@/components/Callback"
 import MyTodos from "@/components/MyTodos"
 import AddTodo from "@/components/AddTodo"
+import ListUsers from "@/components/ListUsers"
+import UserListMsg from "@/components/UserListMsg"
 
 Vue.use(Router)
 
@@ -29,6 +31,16 @@ export default new Router({
     {
       path: "/addtodo",
       component: AddTodo 
+    },
+    {
+      path: "/listusers",
+      children: [
+      	{
+		path: ':id',
+		component: UserListMsg
+	}
+      ],
+      component: ListUsers
     }
   ]
 })
