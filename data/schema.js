@@ -3,7 +3,7 @@ const resolvers = require('./resolvers');
 
 const typeDefs = `
 	type User {
-		friend_id: Int!
+		friend_id: String!
 		name: String!
 		email: String!
 	}

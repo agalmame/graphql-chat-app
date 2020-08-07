@@ -1,8 +1,10 @@
 const { User, task, friends} = require('../models');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
+const Op = require("sequelize").Op
 require('dotenv').config()
-let i = 0;
+
+
 const resolvers = {
 	Query: {
 /*		async me(_,args , { user }) {
@@ -11,7 +13,8 @@ const resolvers = {
 			}
 			return await User.findById(user.id)
 		},*/
-		async myTodo(_,args, { user }) {
+		async myTodo(_,args, context) {
+			const {user}  = await context
 			if(!user) {
 				throw new Error("you are not authorized");
 			}
@@ -22,12 +25,21 @@ const resolvers = {
 					task_id: user.sub
 				}
 			})
-			console.log(i++)
 			return all
 		},
-		async users(_, args, { user }){
-			console.log('heeeere')
-			return await friends.findAll({attributes:["friend_id","name","email"]})
+		async users(_, args, context){
+			const { user } = await context
+			if(!user){
+				throw new Error("no auth")
+			}
+			return await friends.findAll({
+				where: {
+					friend_id: {
+						[Op.notLike]: user.sub 
+					}
+				},
+				attributes:["friend_id","name","email"]
+			})
 		}
 	},
 
@@ -65,7 +77,8 @@ const resolvers = {
 				{ expiresIn: '1d' }
 			)
 		},*/
-		async addTodo (_, {title}, {user}) {
+		async addTodo (_, {title}, context) {
+			const {user} = await context 
 			if(!user){
 				throw new Error("you are not authorized")
 			}

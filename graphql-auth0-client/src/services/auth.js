@@ -18,7 +18,8 @@ export default class Auth {
 		clientID: 'jpEBXu7GerL2kDpH1aDp3Pfpwy0fmhx0',
 		redirectUri: 'http://localhost:8080/callback',
 		audience: 'https://graphql-api',
-		responseType: 'token id_token'
+		responseType: 'token id_token',
+		scope: 'openid email profile'
 	})
 
 	login() {
