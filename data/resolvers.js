@@ -1,9 +1,16 @@
-const { User, task, friends} = require('../models');
+const {  task, friends} = require('../models');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
 const Op = require("sequelize").Op
 require('dotenv').config()
+const { PubSub, withFilter } = require("apollo-server")
 
+
+const ps = new PubSub()
+
+
+const chats = []
+const CHAT_CHANNEL = 'CHAT_CHANNEL'
 
 const resolvers = {
 	Query: {
@@ -27,7 +34,7 @@ const resolvers = {
 			})
 			return all
 		},
-		async users(_, args, context){
+		async friends(_, args, context){
 			const { user } = await context
 			if(!user){
 				throw new Error("no auth")
@@ -35,11 +42,14 @@ const resolvers = {
 			return await friends.findAll({
 				where: {
 					friend_id: {
-						[Op.notLike]: user.sub 
+						[Op.notLike]: user.sub.split("|")[1] 
 					}
 				},
 				attributes:["friend_id","name","email"]
 			})
+		},
+		async chats (_, args, context){
+			return chats 
 		}
 	},
 
@@ -88,8 +98,32 @@ const resolvers = {
 			})
 
 			return todo 
+		},
+		async sendMessage (_, {from, to, message}, context) {
+			const chat = { id: chats.length +1, from, to, message }
+			chats.push(chat)
+			ps.publish('CHAT_CHANNEL', { messageSent: chat })
+			console.log(chat)
+			return chat 
 		}
 
+	},
+	Subscription: {
+		messageSent: {
+			subscribe: withFilter(()=>{
+					console.log("subscribe \n")
+					return ps.asyncIterator(CHAT_CHANNEL)
+				},
+			 	(payload, variables, context)=>{ 
+					console.log("payload",payload)
+					console.log("variables", variables)
+					console.log("context", context.user.sub.split("|")[1])
+					let v = !!(variables.chat_id==context.user.sub.split("|")[1] || context.user.sub.split("|")[1]==payload.to )
+					console.log(v)
+					return !!(context.user.sub.split("|")[1]==payload.messageSent.to || payload.messageSent.from == context.user.sub.split("|")[1]) 
+				}
+			)
+		}
 	}
 }
 

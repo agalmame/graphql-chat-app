@@ -3,15 +3,15 @@
 		<div class="col1">
 			<ul class="list">
 				<p class="list-title"> Your Friends</p>
-				<li @click="redirectMsg(user.friend_id)" v-if="users.length != 0" v-for="user in users " :key="user.friend_id" class="list-item">
-					<div class="friend-img"></div><p class="friend-name">{{ user.name }}</p>
+				<li @click="redirectMsg(friend)" v-if="friends.length != 0" v-for="friend in friends " :key="friend.friend_id" class="list-item">
+					<div class="friend-img"></div><p class="friend-name">{{ friend.name }}</p>
 				</li>
 				<p v-else>No User</p>
 	
 			</ul>
 		</div>
 		<div class="col2">
-			<router-view></router-view>
+			<router-view :friend="friend"></router-view>
 		</div>
 	</section>
 </template>
@@ -20,22 +20,23 @@
 	export default {
 		data() {
 			return {
-				users:[]
+				friends:[],
+				friend: window.localStorage.getItem('graphql_auth0_sub')
 					
 			}
 		},
 		methods: {
-			redirectMsg(id) {
+			redirectMsg(friend) {
 				this.$router.push(
-					{path: `/listusers/${id}`}
+					{path: `/listusers/${friend.friend_id}`}
 				)
 			}
 		},
 		apollo :{
-			users:{
+			friends:{
 				query: gql `
-					query usersQuery {
-						users {
+					query friendsQuery {
+						friends {
 							friend_id
 							name
 							email

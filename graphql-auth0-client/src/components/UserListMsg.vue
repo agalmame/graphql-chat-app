@@ -2,28 +2,71 @@
 	<div class="window">
 			<p></p>
 			<ul class="messages-list">
-				<li class="messages-list-item"></li>	
+				<li v-for="(chat, id ) in chats" :key="id" class="messages-list-item">
+					<strong>{{ chat.from }}</strong>:
+					{{ chat.message }}
+				</li>	
 			</ul>
 			<form @submit.prevent class="form-message">
-				<input type="text" placeholder="type here" v-model.trim="message" />
-				<button class="button-send" @click="send()">send</button>
+				<input type="text" placeholder="type here"	
+				v-model.trim="message" />
+				<button class="button-send" @click="sendMessage">send</button>
 			</form>
 	</div>
 </template>
 
 <script>
 	import gql from "graphql-tag"
+	import { CHATS_QUERY, SEND_MESSAGE_MUTATION, MESSAGE_SENT_SUBSCRIPTION } from "@/graphql"
 	export default {
 		data (){
 			return {
-				message: ""		
+				chats: [],
+				message: '',
 			}
 		},
+		props: ['friend'],
 		computed: {
 			id() {
-				return this.$route.params.id
+				return this.$route.params.id 
 			}
 			
+		},
+		methods: {
+			async sendMessage(){
+				const message = this.message;
+				this.message = "";
+				
+				await this.$apollo.mutate({
+					mutation: SEND_MESSAGE_MUTATION,
+					variables: {
+						from: this.friend,
+						to: this.id,
+						message
+					}
+				})
+			}
+		},
+		apollo: {
+			chats: {
+				query: CHATS_QUERY,
+				subscribeToMore: {
+					document: MESSAGE_SENT_SUBSCRIPTION,
+					variables (){
+						return {
+							chat_id: this.id
+						}
+					
+					},
+					updateQuery:(previousData, { subscriptionData }) => {
+						console.log('waaaaaaaw')
+						return {
+							chats: [...previousData.chats, subscriptionData.data.messageSent]
+						}
+					},
+					onError: (err)=>console.error(err)
+				}
+			}
 		}
 	}
 </script>
@@ -36,8 +79,8 @@
 		max-width: 600px;
 		width: 80%;
 		height: 80%;
-		display: flex;
-		flex-direction: column;
+	/*	display: flex;
+		flex-direction: column;*/
 		justify-content: left;
 		align-items: center;
 		margin: 10px 2px;

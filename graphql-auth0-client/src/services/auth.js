@@ -38,6 +38,7 @@ export default class Auth {
 		const expiresAt = JSON.stringify(
 			authResult.expiresIn * 1000 + new Date().getTime()
 		)
+		localStorage.setItem('graphql_auth0_sub', authResult.idTokenPayload.sub.split("|")[1])
 		localStorage.setItem('graphql_auth0_access_token', authResult.accessToken)
 		localStorage.setItem('graphql_auth0_id_token', authResult.idToken)
 		localStorage.setItem('graphql_auth0_expires_at', expiresAt)
