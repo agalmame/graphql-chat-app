@@ -40,8 +40,11 @@ export const SEND_MESSAGE_MUTATION = gql`
 	}
 `
 export const MESSAGE_SENT_SUBSCRIPTION = gql`
-	subscription MessageSentSubscription ($chat_id: String!){
-		messageSent (chat_id: $chat_id) {
+	subscription MessageSentSubscription ($chat_id: String!, $me: String!){
+		messageSent (
+			chat_id: $chat_id,
+			me: $me 
+		) {
 			id
 			from
 			to

@@ -115,12 +115,9 @@ const resolvers = {
 					return ps.asyncIterator(CHAT_CHANNEL)
 				},
 			 	(payload, variables, context)=>{ 
-					console.log("payload",payload)
-					console.log("variables", variables)
-					console.log("context", context.user.sub.split("|")[1])
-					let v = !!(variables.chat_id==context.user.sub.split("|")[1] || context.user.sub.split("|")[1]==payload.to )
-					console.log(v)
-					return !!(context.user.sub.split("|")[1]==payload.messageSent.to || payload.messageSent.from == context.user.sub.split("|")[1]) 
+					console.log(payload)
+					console.log(variables.chat_id)
+					return !!((context.user.sub.split("|")[1]==payload.messageSent.to && payload.messageSent.from==variables.chat_id ) || payload.messageSent.from == context.user.sub.split("|")[1]) 
 				}
 			)
 		}

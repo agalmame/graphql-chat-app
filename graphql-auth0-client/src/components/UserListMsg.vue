@@ -25,7 +25,7 @@
 				message: '',
 			}
 		},
-		props: ['friend'],
+		props: ['user'],
 		computed: {
 			id() {
 				return this.$route.params.id 
@@ -40,7 +40,7 @@
 				await this.$apollo.mutate({
 					mutation: SEND_MESSAGE_MUTATION,
 					variables: {
-						from: this.friend,
+						from: this.user,
 						to: this.id,
 						message
 					}
@@ -54,7 +54,8 @@
 					document: MESSAGE_SENT_SUBSCRIPTION,
 					variables (){
 						return {
-							chat_id: this.id
+							chat_id: this.id,
+							me: this.user
 						}
 					
 					},

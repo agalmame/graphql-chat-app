@@ -36,7 +36,7 @@ const typeDefs = `
 	}
 	
 	type Subscription {
-		messageSent(chat_id: String!): Chat 
+		messageSent(chat_id: String!, me: String!): Chat 
 	}
 `
 

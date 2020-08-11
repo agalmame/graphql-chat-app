@@ -11,7 +11,7 @@
 			</ul>
 		</div>
 		<div class="col2">
-			<router-view :friend="friend"></router-view>
+			<router-view :user="user"></router-view>
 		</div>
 	</section>
 </template>
@@ -21,7 +21,7 @@
 		data() {
 			return {
 				friends:[],
-				friend: window.localStorage.getItem('graphql_auth0_sub')
+				user: window.localStorage.getItem('graphql_auth0_sub')
 					
 			}
 		},
