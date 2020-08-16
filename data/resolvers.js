@@ -1,15 +1,14 @@
-const {  task, friends} = require('../models');
+const {  task, friends, conversation, message: messagedb} = require('../models');
 const bcrypt = require('bcryptjs');
 const jsonwebtoken = require('jsonwebtoken');
 const Op = require("sequelize").Op
 require('dotenv').config()
 const { PubSub, withFilter } = require("apollo-server")
-
+const {conv} = require("../services/mixins")
 
 const ps = new PubSub()
 
 
-const chats = []
 const CHAT_CHANNEL = 'CHAT_CHANNEL'
 
 const resolvers = {
@@ -39,7 +38,7 @@ const resolvers = {
 			if(!user){
 				throw new Error("no auth")
 			}
-			return await friends.findAll({
+			return  await friends.findAll({
 				where: {
 					friend_id: {
 						[Op.notLike]: user.sub.split("|")[1] 
@@ -48,8 +47,14 @@ const resolvers = {
 				attributes:["friend_id","name","email"]
 			})
 		},
-		async chats (_, args, context){
-			return chats 
+		async conversation (_, { from , to}, context){
+			const { conv_sender, conv_receiver } = await conv(from,to)
+			if (conv_sender){
+				return await messagedb.findAll({attributes: ["sender","message"],where: {conversation_id:conv_sender.conversation_id}}) 
+			}else if(conv_receiver){
+				return await messagedb.findAll({attributes:["sender","message"],where: {conversation_id:conv_receiver.conversation_id}})
+			}
+			return []
 		}
 	},
 
@@ -96,28 +101,48 @@ const resolvers = {
 				task_id: user.sub,
 				title 
 			})
-
 			return todo 
 		},
-		async sendMessage (_, {from, to, message}, context) {
-			const chat = { id: chats.length +1, from, to, message }
-			chats.push(chat)
-			ps.publish('CHAT_CHANNEL', { messageSent: chat })
-			console.log(chat)
-			return chat 
+		async sendMessage (_, {from, to, message},context) {
+			const {conv_sender, conv_receiver} = await conv(from , to)
+			let msg;
+
+			if(conv_sender){
+				 msg = await messagedb.create({
+					 conversation_id:conv_sender.conversation_id,
+					sender: from,
+					message,
+				})
+				msg = {conversation_id:msg.conversation_id,sender:msg.sender,message:msg.message}
+			}else if(conv_receiver){
+				msg = await messagedb.create({
+					conversation_id: conv_receiver.conversation_id,
+					sender: from,
+					message 
+				})
+				msg = {conversation_id:msg.conversation_id,sender:msg.sender,message:msg.message}
+			}
+			ps.publish('CHAT_CHANNEL', { messageSent: msg })
+			return msg 
 		}
 
 	},
 	Subscription: {
 		messageSent: {
 			subscribe: withFilter(()=>{
-					console.log("subscribe \n")
+					console.log('messageSent (withFilter)')
 					return ps.asyncIterator(CHAT_CHANNEL)
 				},
-			 	(payload, variables, context)=>{ 
-					console.log(payload)
-					console.log(variables.chat_id)
-					return !!((context.user.sub.split("|")[1]==payload.messageSent.to && payload.messageSent.from==variables.chat_id ) || payload.messageSent.from == context.user.sub.split("|")[1]) 
+			 	async (payload, variables, context)=>{ 
+					const conv = await conversation.findOne({where: {conversation_id: payload.messageSent.conversation_id}})
+					if(conv.sender==payload.messageSent.sender){
+						var receiver = conv.receiver;
+						var sender = conv.sender;
+					}else {
+						var receiver = conv.sender
+						var sender = conv.receiver
+					}
+					return !!((context.user.sub.split("|")[1]==receiver && variables.to==payload.messageSent.sender) || context.user.sub.split("|")[1]==sender) 
 				}
 			)
 		}

@@ -2,10 +2,11 @@
 	<div class="window">
 			<p></p>
 			<ul class="messages-list">
-				<li v-for="(chat, id ) in chats" :key="id" class="messages-list-item">
-					<strong>{{ chat.from }}</strong>:
+				<li v-for="(chat, id ) in conversation" :key="id" class="messages-list-item">
+					<strong>{{ chat.sender }}</strong>:
 					{{ chat.message }}
-				</li>	
+				</li>
+				<li>&nbsp;</li>
 			</ul>
 			<form @submit.prevent class="form-message">
 				<input type="text" placeholder="type here"	
@@ -21,7 +22,7 @@
 	export default {
 		data (){
 			return {
-				chats: [],
+				conversation: [],
 				message: '',
 			}
 		},
@@ -29,9 +30,19 @@
 		computed: {
 			id() {
 				return this.$route.params.id 
-			}
+			},
+			user_id(){
+				return this.user
+			},
 			
 		},
+		created(){
+			document.querySelector(".messages-list").scrollTo(0,10000)
+		},
+		updated(){
+			document.querySelector(".messages-list").scrollTo(0,10000)
+		},
+
 		methods: {
 			async sendMessage(){
 				const message = this.message;
@@ -48,21 +59,27 @@
 			}
 		},
 		apollo: {
-			chats: {
+			conversation: {
 				query: CHATS_QUERY,
+				variables(){
+					return{
+						from: this.user_id,
+						to: this.id
+					}
+				},
 				subscribeToMore: {
 					document: MESSAGE_SENT_SUBSCRIPTION,
 					variables (){
 						return {
-							chat_id: this.id,
-							me: this.user
+							to: this.id,
+							from: this.user_id
 						}
 					
 					},
 					updateQuery:(previousData, { subscriptionData }) => {
-						console.log('waaaaaaaw')
+						document.querySelector(".messages-list").scrollTo(0,10000)
 						return {
-							chats: [...previousData.chats, subscriptionData.data.messageSent]
+							conversation: [...previousData.conversation, subscriptionData.data.messageSent]
 						}
 					},
 					onError: (err)=>console.error(err)
@@ -87,6 +104,7 @@
 		margin: 10px 2px;
 		border: 1px solid #e6ecf0;
 		background-color: #fff;
+		overflow-y: auto;
 	}
 	form.form-message {
 		background: #fff;

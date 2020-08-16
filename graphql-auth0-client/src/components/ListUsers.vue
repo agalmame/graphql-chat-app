@@ -25,12 +25,16 @@
 					
 			}
 		},
+		props: ["authenticated"],
 		methods: {
 			redirectMsg(friend) {
 				this.$router.push(
 					{path: `/listusers/${friend.friend_id}`}
 				)
 			}
+		},
+		beforeRouteEnter(to, from, next){
+			next(vm => vm.authenticated ? next() : next("/"))
 		},
 		apollo :{
 			friends:{
