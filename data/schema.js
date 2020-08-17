@@ -14,9 +14,7 @@ const typeDefs = `
 	}
 	
 	type Chat {
-		id: ID!
-		from: String!
-		to: String
+		sender: String!
 		message: String!
 	}
 	
@@ -24,7 +22,7 @@ const typeDefs = `
 		me: User 
 		myTodo: [Todo]
 		friends: [User]
-		chats: [Chat]
+		conversation(from: String!, to: String!): [Chat]
 	}
 	
 	type Mutation {
@@ -36,7 +34,7 @@ const typeDefs = `
 	}
 	
 	type Subscription {
-		messageSent(chat_id: String!): Chat 
+		messageSent(to: String!, from: String!): Chat 
 	}
 `
 

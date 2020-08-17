@@ -16,11 +16,9 @@ export const ADD_TODO_MUTATION = gql`
 `
 
 export const CHATS_QUERY = gql`
-	query ChatsQuery {
-		chats {
-			id
-			from
-			to 
+	query ConversationQuery ($from: String!, $to: String!){
+		conversation(from: $from,to: $to) {
+			sender  
 			message
 		}
 	}
@@ -32,19 +30,18 @@ export const SEND_MESSAGE_MUTATION = gql`
 			to: $to,
 			message: $message 
 		){
-			id
-			from
-			to 
+			sender 
 			message
 		}
 	}
 `
 export const MESSAGE_SENT_SUBSCRIPTION = gql`
-	subscription MessageSentSubscription ($chat_id: String!){
-		messageSent (chat_id: $chat_id) {
-			id
-			from
-			to
+	subscription MessageSentSubscription ($to: String!, $from: String!){
+		messageSent (
+			to: $to,
+			from: $from 
+		) {
+			sender 
 			message 
 		}
 	}
