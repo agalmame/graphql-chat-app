@@ -6,8 +6,8 @@ require("dotenv").config()
 module.exports.conv = async function(from, to){
 
 	return {
-		conv_sender: await conversation.findOne({ where : { sender: from , receiver: to} }),
-		conv_receiver :await conversation.findOne({ where : { sender: to, receiver: from }})
+		conv_sender: await conversation.findOne({attributes:["conversation_id","sender","receiver"], where : { sender: from , receiver: to} }),
+		conv_receiver :await conversation.findOne({ attributes:["conversation_id","sender","receiver"],where : { sender: to, receiver: from }})
 	}
 
 }

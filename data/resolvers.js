@@ -105,22 +105,29 @@ const resolvers = {
 		},
 		async sendMessage (_, {from, to, message},context) {
 			const {conv_sender, conv_receiver} = await conv(from , to)
-			let msg;
-
+			let msg = null;
 			if(conv_sender){
-				 msg = await messagedb.create({
-					 conversation_id:conv_sender.conversation_id,
-					sender: from,
-					message,
-				})
+				try {
+					 msg = await messagedb.create({
+						conversation_id:conv_sender.conversation_id,
+						sender: from,
+						message,
+					})
 				msg = {conversation_id:msg.conversation_id,sender:msg.sender,message:msg.message}
+				}catch(e){
+					throw new Error(e.message)
+				}
 			}else if(conv_receiver){
-				msg = await messagedb.create({
-					conversation_id: conv_receiver.conversation_id,
-					sender: from,
-					message 
-				})
-				msg = {conversation_id:msg.conversation_id,sender:msg.sender,message:msg.message}
+				try{
+					msg = await messagedb.create({
+						conversation_id:parseInt(conv_receiver.conversation_id),
+						sender: from,
+						message,
+					})
+					msg = {conversation_id:msg.conversation_id,sender:msg.sender,message:msg.message}
+				}catch(e){
+					throw new Error(e.message)
+				}
 			}
 			ps.publish('CHAT_CHANNEL', { messageSent: msg })
 			return msg 
@@ -134,7 +141,7 @@ const resolvers = {
 					return ps.asyncIterator(CHAT_CHANNEL)
 				},
 			 	async (payload, variables, context)=>{ 
-					const conv = await conversation.findOne({where: {conversation_id: payload.messageSent.conversation_id}})
+					const conv = await conversation.findOne({attributes:["conversation_id","sender","receiver"],where: {conversation_id: payload.messageSent.conversation_id}})
 					if(conv.sender==payload.messageSent.sender){
 						var receiver = conv.receiver;
 						var sender = conv.sender;

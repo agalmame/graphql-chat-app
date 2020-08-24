@@ -24,7 +24,8 @@ exports.verify = function (token){
 
 			jsonwebtoken.verify(
 				token.split(" ")[1],
-				getKey,{   
+				getKey,
+				{   
 					audience: process.env.AUTH0_AUDIENCE,
 					issuer: process.env.AUTH0_ISSUER,
 					algorithms: ['RS256']

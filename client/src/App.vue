@@ -3,7 +3,7 @@
   	<nav class="navbar is-primary">
 		<div class="container">
 			<div class="navbar-brand">
-				<router-link class="navbar-item" to="/">GraphQL Auth0</router-link>
+				<router-link class="navbar-item" to="/">Codylia</router-link>
 			</div>
 			<div class="navbar-menu">
 				<div class="navbar-end">
@@ -29,12 +29,32 @@ const { login, logout, authenticated, authNotifier } = auth
 export default {
   name: 'App',
   components:{
-  	theFooter
+  	theFooter 
   },
   data() {
   	return {
 		auth,
-		authenticated 
+		authenticated, 
+		products: [
+			{
+				code: "test",
+				name: "test",
+				category: "test",
+				quantity: "test"
+			},
+			{
+				code: "test1",
+				name: "test1",
+				category: "test1",
+				quantity: "test1"
+			},
+			{
+				code: "test2",
+				name: "test2",
+				category: "test2",
+				quantity: "test2"
+			}
+		]
 	}
   },
   created() {

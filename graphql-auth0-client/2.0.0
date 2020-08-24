@@ -1,0 +1,8 @@
++ sass-loader@9.0.3
+added 9 packages from 9 contributors, removed 14 packages, updated 2 packages and audited 1364 packages in 17.362s
+
+37 packages are looking for funding
+  run `npm fund` for details
+
+found 17 vulnerabilities (3 low, 8 moderate, 6 high)
+  run `npm audit fix` to fix them, or `npm audit` for details
