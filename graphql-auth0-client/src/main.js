@@ -11,6 +11,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { InMemoryCache } from "apollo-cache-inmemory"
 import VueApollo from "vue-apollo"
 import { ApolloLink, split } from "apollo-link"
+import "@storefront-ui/vue/styles.scss";
 Vue.config.productionTip = false
 
 const token = localStorage.getItem('graphql_auth0_access_token')

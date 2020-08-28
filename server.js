@@ -22,7 +22,6 @@ const server = new ApolloServer({
 	schema,
 	subscriptions:{
 		onConnect:(connectionP, ws, context)=>{
-			console.log('subscriptions')
 			if(connectionP.authToken){ 
 				const user = verify(connectionP.authToken).then(({decoded})=>{ return { user: decoded}})
 				return user
@@ -31,7 +30,7 @@ const server = new ApolloServer({
 	},
 	context: async ({ req, connection}) => {
 		if(connection){
-			console.log('context(connection)')
+			console.log('context(ws)')
 			const {conv_sender, conv_receiver} =await conv(connection.variables.from, connection.variables.to)
 			if (!conv_sender && !conv_receiver){
 				var { conversation_id ,sender, receiver} = await conversation.create({
@@ -42,6 +41,7 @@ const server = new ApolloServer({
 			return {...connection.context};
 		}
 		if(req.user){
+			console.log('context(http)')
 			const friend = await friends.findOne({attributes:["friend_id"], where: { friend_id: req.user.sub.split("|")[1] }})
 			if(!friend){
 					createUser(req)

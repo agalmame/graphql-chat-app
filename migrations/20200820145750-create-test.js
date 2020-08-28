@@ -1,31 +1,18 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('messages', {
+    await queryInterface.createTable('tests', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      conversation_id: {
-      	allowNull: false,
-	type: Sequelize.INTEGER,
-	references:{
-		model: "conversations",
-		key: "conversation_id"
-	}
-      },
-      sender: {
-        type: Sequelize.STRING,
-	allowNull:false,
-	references: {
-		model:"friends",
-		key:"friend_id"
-	}
-      },
-      message: {
+      name: {
         type: Sequelize.STRING
+      },
+      age: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -38,6 +25,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('messages');
+    await queryInterface.dropTable('tests');
   }
 };

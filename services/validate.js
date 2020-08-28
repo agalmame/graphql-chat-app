@@ -24,8 +24,8 @@ exports.verify = function (token){
 
 			jsonwebtoken.verify(
 				token.split(" ")[1],
-				getKey,{   
-					audience: process.env.AUTH0_AUDIENCE,
+				getKey,
+				{   
 					issuer: process.env.AUTH0_ISSUER,
 					algorithms: ['RS256']
 				},
@@ -43,7 +43,6 @@ exports.auth = jwt({
           jwksRequestsPerMinute: 5,
           jwksUri: `${process.env.AUTH0_ISSUER}.well-known/jwks.json`
     }),
-    audience: process.env.AUTH0_AUDIENCE,
     issuer: process.env.AUTH0_ISSUER,
     algorithms: ['RS256'],
 });
