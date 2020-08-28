@@ -1,4 +1,3 @@
-
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
@@ -7,6 +6,8 @@ import MyTodos from "@/components/MyTodos"
 import AddTodo from "@/components/AddTodo"
 import ListUsers from "@/components/ListUsers"
 import UserListMsg from "@/components/UserListMsg"
+import { authGuard } from "@/services/authGard"
+
 
 Vue.use(Router)
 
@@ -26,22 +27,28 @@ export default new Router({
     {
       path: "/mytodos",
       name: "MyTodos",
-      component: MyTodos 
+      component: MyTodos,
+      beforeEnter: authGuard,
       
     },
     {
       path: "/addtodo",
-      component: AddTodo 
+      component: AddTodo,
+      beforeEnter: authGuard,
+	
     },
     {
       path: "/listusers",
       children: [
       	{
 		path: ':id',
-		component: UserListMsg
+		component: UserListMsg,
+		beforeEnter: authGuard,
+		
 	}
       ],
-      component: ListUsers
+      component: ListUsers,
+      beforeEnter: authGuard,
     }
   ]
 })

@@ -5,9 +5,9 @@
 <script>
 export default {
 	name: "Callbalck",
-	props: ['auth'],
-	created() {
-		this.auth.handleAuthentication()
-	}
+//	props: ['auth'],
+//	created() {
+//		this.auth.handleAuthentication()
+//	}
 }
 </script>

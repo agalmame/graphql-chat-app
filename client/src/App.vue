@@ -7,7 +7,7 @@
 			</div>
 			<div class="navbar-menu">
 				<div class="navbar-end">
-					<a class="navbar-item" v-if="!authenticated" @click="login()">Log In</a>
+					<a class="navbar-item" v-if="!$auth.isAuthenticated" @click="login">Log In</a>
 					<a class="navbar-item" v-else @click="logout()">Log Out</a>
 					<router-link class="navbar-item" :to="{path:'/listusers'}">chat</router-link>
 				</div>
@@ -15,17 +15,17 @@
 		</div>
 	</nav>
 	<main class="">
-		<router-view :auth="auth" :authenticated="authenticated"></router-view>
+		<router-view></router-view>
 	</main>
 	<theFooter></theFooter>
   </div>
 </template>
 
 <script>
-import Auth from "@/services/auth"
+//import Auth from "@/services/auth"
 import theFooter from "@/components/footer"
-const auth = new Auth()
-const { login, logout, authenticated, authNotifier } = auth 
+//const auth = new Auth()
+//const { login, logout, authenticated, authNotifier } = auth 
 export default {
   name: 'App',
   components:{
@@ -33,38 +33,24 @@ export default {
   },
   data() {
   	return {
-		auth,
-		authenticated, 
-		products: [
-			{
-				code: "test",
-				name: "test",
-				category: "test",
-				quantity: "test"
-			},
-			{
-				code: "test1",
-				name: "test1",
-				category: "test1",
-				quantity: "test1"
-			},
-			{
-				code: "test2",
-				name: "test2",
-				category: "test2",
-				quantity: "test2"
-			}
-		]
+//		auth,
+//		authenticated, 
 	}
   },
   created() {
-  	authNotifier.on('authChange', authState => {
-		this.authenticated = authState.authenticated 
-	})
+//  	authNotifier.on('authChange', authState => {
+//		this.authenticated = authState.authenticated 
+//	})
   },
   methods: {
-  	login,
-	logout 
+	  login(){
+	  	this.$auth.loginWithRedirect();
+	  },
+	  logout(){
+		  this.$auth.logout({
+		  	returnTo: window.location.origin
+		  })
+	  } 
   }
 }
 </script>

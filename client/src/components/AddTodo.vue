@@ -31,9 +31,9 @@
 				title: ''
 			}
 		},
-		beforeRouteEnter (to, from, next) {
-			next(vm => { return vm.authenticated ? next() : next('/')})
-		},
+	//	beforeRouteEnter (to, from, next) {
+	//		next(vm => { return vm.authenticated ? next() : next('/')})
+	//	},
 		methods: {
 			addTodo() {
 				this.$apollo.mutate({

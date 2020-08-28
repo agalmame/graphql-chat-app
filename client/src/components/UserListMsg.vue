@@ -24,19 +24,23 @@
 			return {
 				conversation: [],
 				message: '',
+				u: '' 
 			}
 		},
-		props: ['user'],
+		props:['user'],
 		computed: {
 			id() {
 				return this.$route.params.id 
 			},
 			user_id(){
-				return this.user
+
+				this.$auth.user.then(user => { console.log("u :",user.sub); this.u=user.sub })
+				return this.$auth.user.then(user => { return user.sub }) 
 			},
 			
 		},
-		created(){
+		async created(){
+			this.u = await this.user 
 			document.querySelector(".messages-list").scrollTo(0,10000)
 		},
 		updated(){
@@ -51,7 +55,7 @@
 				await this.$apollo.mutate({
 					mutation: SEND_MESSAGE_MUTATION,
 					variables: {
-						from: this.user,
+						from: this.u.split('|')[1],
 						to: this.id,
 						message
 					}
@@ -63,7 +67,7 @@
 				query: CHATS_QUERY,
 				variables(){
 					return{
-						from: this.user_id,
+						from: this.u.split('|')[1],
 						to: this.id
 					}
 				},
@@ -72,7 +76,7 @@
 					variables (){
 						return {
 							to: this.id,
-							from: this.user_id
+							from: this.u.split('|')[1]
 						}
 					
 					},
@@ -85,6 +89,7 @@
 					onError: (err)=>console.error(err)
 				}
 			}
+
 		}
 	}
 </script>

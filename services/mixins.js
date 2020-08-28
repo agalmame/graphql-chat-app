@@ -14,17 +14,29 @@ module.exports.conv = async function(from, to){
 
 
 module.exports.createUser = function(req){
+	fetch(
+		"https://dev-jp-ctqz9.eu.auth0.com/oauth/token",{
+			method: "POST",
+			headers: {
+				'content-type' : 'application/json'
+			},
+			body : process.env.AUTH0_API_V2
+		}).then(res => res.json())
+		.then(({access_token}) => {
+			console.log("access_token: ",access_token)
 
-		fetch(
-			`${process.env.AUTH0_ISSUER}api/v2/users/${req.user.sub}`,{
-				method: "GET",
-				headers: {"authorization": `Bearer ${process.env.AUTH0_V2_API}`}
-			}).then(res => res.json())
-			.then(json => {
-				friends.create({
-					friend_id: req.user.sub.split("|")[1],
-					name: json.email.split('@')[0],
-					email: json.email 
-				})
-			})
+				fetch(
+					`${process.env.AUTH0_ISSUER}api/v2/users/${req.user.sub}`,{
+						method: "GET",
+						headers: {"authorization": `Bearer ${access_token}`}
+					}).then(res => res.json())
+					.then(json => {
+						friends.create({
+							friend_id: req.user.sub.split("|")[1],
+							name: json.email.split('@')[0],
+							email: json.email 
+						})
+					})
+		})
 }
+

@@ -8,9 +8,6 @@
     						        <div  @click="redirectMsg(slotProps.option)">{{slotProps.option.name}}</div>
     					</template>
 				</Listbox>
-				<li @click="redirectMsg(friend)" v-if="friends.length != 0" v-for="friend in friends " :key="friend.friend_id" class="list-item">
-					<div class="friend-img"></div><p class="friend-name">{{ friend.name }}</p>
-				</li>
 				<p v-else>No User</p>
 				<!--<SlotTest :users="test" >
 				<template v-slot:test="slotProps">
@@ -38,11 +35,10 @@
 			return {
 				test: [{name: "bar",city: "meknes"},{name: "foo",city:"florida"}],
 				friends:[],
-				user: window.localStorage.getItem('graphql_auth0_sub')
+				user: this.$auth.user.then(user => { return user.sub })
 					
 			}
 		},
-		props: ["authenticated"],
 		methods: {
 			redirectMsg(friend) {
 				this.$router.push(
@@ -54,9 +50,9 @@
 				alert(fliped)
 			}
 		},
-		beforeRouteEnter(to, from, next){
-			next(vm => vm.authenticated ? next() : next("/"))
-		},
+		//beforeRouteEnter(to, from, next){
+		//	next(vm => vm.authenticated ? next() : next("/"))
+		//},
 		apollo :{
 			friends:{
 				query: gql `

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="authenticated">
+		<div v-if="$auth.isAuthenticated">
 			<p>You are logged in!</p>
 			<p>
 				<router-link to="addtodo">add new todo</router-link>
@@ -8,14 +8,19 @@
 			</p>
 		</div>
 		<h4 v-else>
-			you are not logged in! Please<a @click="auth.login()">Log In </a>to continue
+			you are not logged in! Please<a @click="login()">Log In </a>to continue
 		</h4>
 	</div>
 </template>
 <script>
 	export default {
 		name: "Home",
-		props: ['auth', 'authenticated']
+	//	props: ['auth', 'authenticated']
+		methods:{
+			login(){
+				this.$auth.loginWithRedirect()
+			}
+		}
 	}
 </script>
 <style></style>

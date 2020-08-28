@@ -15,7 +15,6 @@
 		components: {
 			TieredMenu,	
 		},
-		props: ['authenticated'],
 		data() {
 			return {
 				myTodo: []
@@ -31,11 +30,11 @@
 				return todos	
 			}
 		},
-		beforeRouteEnter (to, from, next) {
-			next(vm =>{
-				return vm.authenticated ? next() : next('/')
-			})
-		},
+		//beforeRouteEnter (to, from, next) {
+		//	next(vm =>{
+		//		return vm.authenticated ? next() : next('/')
+		//	})
+		//},
 		apollo: {
 			myTodo: {
 				query: MY_TODOS_QUERY
