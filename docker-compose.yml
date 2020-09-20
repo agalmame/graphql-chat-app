@@ -1,0 +1,70 @@
+version: "3"
+services:
+  web_app:
+    container_name: "nodejs"
+    build: ./server/
+    ports:
+      - "3000:3000"
+    depends_on:
+      - pg 
+    networks:
+      - app-network
+  pg:
+    image: "postgres:12"
+    container_name: "postgres"
+    ports:
+      - "5432:5432" 
+    volumes:
+      - chat_app:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  web_server:
+    image: nginx:mainline-alpine
+    container_name: "nginx"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - web-root:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - dhparam:/etc/ssl/certs
+    depends_on:
+      - web_app
+    networks:
+      - app-network
+
+  certbot:
+    image: certbot/certbot
+    container_name: "certbot"
+    volumes:
+      - web-root:/var/www/html
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - web_server
+    command: certonly --webroot --webroot-path=/var/www/html  --email agalmameyassine@gmail.com --agree-tos --no-eff-email --force-renewal -d codylia.com  -d www.codylia.com
+
+volumes:
+  chat_app:
+  certbot-etc:
+  certbot-var:
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/aglssin/chat-app/server/client/dist/
+      o: bind
+  dhparam:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/aglssin/chat-app/server/dhparam/
+      o: bind
+
+networks:
+  app-network:
+    driver: bridge
